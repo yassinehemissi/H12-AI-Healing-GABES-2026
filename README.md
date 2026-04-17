@@ -6,12 +6,36 @@ This is the work of Synaptech team for the H12 Hackathon by ESPRIT
 
 ***TBA***
 
-# Project Structure
+# Project Structure
 
 - /web : contains the next js web application serving our full ui
 - /backend: serving our fastapi backend using multiple services 
 - /others: containing other assets connected to the project
-- /vibe: containing vibe coding related folders 
+- /vibe: containing vibe coding related folders 
+
+# Backend (FastAPI)
+
+## Local run
+
+```bash
+cd backend
+python -m venv .venv
+.
+.venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
+
+## Docker / Railway
+
+```bash
+docker build -t h12-backend .
+docker run -p 8000:8000 h12-backend
+```
+
+## Hello World
+
+`GET /hello/` returns `{ "message": "Hello, world!" }`.
 
 
 # Team Members
