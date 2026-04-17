@@ -13,6 +13,18 @@ This is the work of Synaptech team for the H12 Hackathon by ESPRIT
 - /others: containing other assets connected to the project
 - /vibe: containing vibe coding related folders 
 
+# How to run the project
+
+## Web (Next.js)
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+Open http://localhost:3000
+
 # Backend (FastAPI)
 
 ## Local run
@@ -20,7 +32,6 @@ This is the work of Synaptech team for the H12 Hackathon by ESPRIT
 ```bash
 cd backend
 python -m venv .venv
-.
 .venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn main:app --reload

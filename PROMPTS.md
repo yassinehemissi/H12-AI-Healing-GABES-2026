@@ -6,3 +6,5 @@
   **Assistant reply summary:** Added `backend/` FastAPI scaffold with hello feature, created `requirements.txt`, Dockerfile/.dockerignore, and documented run steps in README.
 - **User prompt:** Fill the backend coding rules.
   **Assistant reply summary:** Added backend coding standards and architecture rules to `vibe/CODING_RULES_BACKEND.md`.
+- **User prompt:** Update README with run instructions.
+  **Assistant reply summary:** Added a "How to run the project" section for web and cleaned backend local run steps.
