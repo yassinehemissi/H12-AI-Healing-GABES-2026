@@ -1,6 +1,8 @@
 "use client"
 
 import type { ReactNode } from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import {
   Activity,
   Bot,
@@ -42,19 +44,20 @@ type DashboardShellProps = {
 }
 
 const citizenMenu = [
-  { label: "Air Quality", icon: Activity, active: true },
-  { label: "Recycling", icon: Recycle, active: false },
-  { label: "Citizen Chatbot", icon: Bot, active: false },
+  { label: "Air Quality", icon: Activity, href: "/dashboard" },
+  { label: "Recycling", icon: Recycle, href: "/dashboard" },
+  { label: "Citizen Chatbot", icon: Bot, href: "/dashboard" },
 ]
 
 const enterpriseMenu = [
-  { label: "Executive Overview", icon: LineChart, active: true },
-  { label: "RSE Projects", icon: Building2, active: false },
-  { label: "Amalin Core", icon: Compass, active: false },
-  { label: "Compliance Audit", icon: Scale, active: false },
+  { label: "Executive Overview", icon: LineChart, href: "/dashboard" },
+  { label: "RSE Projects", icon: Building2, href: "/dashboard" },
+  { label: "Amalin Core", icon: Compass, href: "/dashboard/amalin" },
+  { label: "Compliance Audit", icon: Scale, href: "/dashboard" },
 ]
 
 export function DashboardShell({ children, user }: DashboardShellProps) {
+  const pathname = usePathname()
   const menu = user.userType === "enterprise" ? enterpriseMenu : citizenMenu
 
   return (
@@ -78,9 +81,11 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
             <SidebarMenu>
               {menu.map((item) => (
                 <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton isActive={item.active}>
-                    <item.icon />
-                    <span>{item.label}</span>
+                  <SidebarMenuButton isActive={pathname === item.href} asChild>
+                    <Link href={item.href}>
+                      <item.icon />
+                      <span>{item.label}</span>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

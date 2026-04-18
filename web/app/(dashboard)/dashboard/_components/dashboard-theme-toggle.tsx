@@ -19,22 +19,24 @@ function applyTheme(theme: ThemeMode) {
 }
 
 export function DashboardThemeToggle() {
-  const [theme, setTheme] = useState<ThemeMode>(() => {
-    if (typeof window === "undefined") {
-      return "light"
-    }
-    const stored = localStorage.getItem(STORAGE_KEY) as ThemeMode | null
-    return (
-      stored ??
-      (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-    )
-  })
+  const [theme, setTheme] = useState<ThemeMode>("light")
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    applyTheme(theme)
-  }, [theme])
+    const stored = localStorage.getItem(STORAGE_KEY) as ThemeMode | null
+    const initialTheme =
+      stored ??
+      (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+
+    setTheme(initialTheme)
+    applyTheme(initialTheme)
+    setMounted(true)
+  }, [])
 
   const toggleTheme = () => {
+    if (!mounted) {
+      return
+    }
     const next: ThemeMode = theme === "dark" ? "light" : "dark"
     setTheme(next)
     applyTheme(next)
@@ -47,6 +49,7 @@ export function DashboardThemeToggle() {
       variant="outline"
       size="icon-sm"
       onClick={toggleTheme}
+      disabled={!mounted}
       className="border-zinc-900/15 bg-white/80 dark:border-white/10 dark:bg-white/[0.03]"
       aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
     >
