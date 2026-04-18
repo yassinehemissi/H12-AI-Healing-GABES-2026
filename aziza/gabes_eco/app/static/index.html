@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gabès Eco - Test Interface</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent: #10b981;
+            --text: #f8fafc;
+        }
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(circle at top right, #1e293b, #0f172a);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
+        }
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        h2 { margin: 0 0 10px 0; font-size: 1.5rem; color: var(--accent); }
+        textarea {
+            width: 100%;
+            height: 140px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            padding: 16px;
+            font-family: inherit;
+            resize: none;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        textarea:focus { outline: none; border-color: var(--accent); }
+        .file-upload-wrapper {
+            background: rgba(0,0,0,0.2);
+            border: 1px dashed var(--glass-border);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .file-upload-wrapper:hover { border-color: var(--accent); color: white; }
+        input[type="file"] { display: none; }
+        button {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        button:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4); }
+        button:active { transform: translateY(0); }
+        
+        #result-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 550px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            color: #cbd5e1;
+        }
+        .tag {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            background: #334155;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .prompts-list {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .prompts-list li {
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(255,255,255,0.05);
+            padding: 10px 14px;
+            border-radius: 8px;
+        }
+        .prompts-list li:hover { background: rgba(255,255,255,0.1); color: var(--accent); transform: translateX(4px); }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: var(--accent);
+            font-weight: bold;
+            padding: 20px;
+        }
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        #map {
+            height: 350px;
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: none;
+            z-index: 1;
+            border: 1px solid var(--glass-border);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Input Panel -->
+        <div class="glass-panel">
+            <h2>🧠 Orchestrator</h2>
+            <p style="margin: 0 0 16px 0; font-size: 0.95rem; color: #94a3b8; line-height: 1.5;">
+                Testez la plateforme. L'orchestrateur analysera votre requête et fera appel au bon agent (Transparence ou Recyclage).
+            </p>
+            <form id="chat-form" style="display: flex; flex-direction: column; gap: 16px;">
+                <textarea id="text-input" placeholder="Ex: Quelle est la situation de la pollution à Gabès aujourd'hui ?"></textarea>
+                
+                <label class="file-upload-wrapper">
+                    <span id="file-name">📷 Cliquez pour joindre une image (Optionnel)</span>
+                    <input type="file" id="file-input" accept="image/*">
+                </label>
+
+                <button type="submit">Envoyer la requête ✨</button>
+            </form>
+            
+            <div style="margin-top: 24px;">
+                <h3 style="margin: 0 0 12px 0; font-size: 1rem; color: #cbd5e1;">Prompts de test rapides :</h3>
+                <ul class="prompts-list">
+                    <li onclick="setPrompt('Quelle est la situation de la pollution de l\'air à Gabès aujourd\'hui ?')">🏭 Pollution globale Gabès</li>
+                    <li onclick="setPrompt('Je sens une odeur forte près de la Zone Industrielle Nord, est-ce normal ?')">🏭 Odeur Zone Industrielle Nord</li>
+                    <li onclick="setPrompt('Où dois-je jeter une bouteille en plastique ?')">♻️ Tri bouteille plastique</li>
+                    <li onclick="setPrompt('Que faire d\'une vieille batterie de voiture à Gabès ?')">♻️ Batterie de voiture</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Result Panel -->
+        <div class="glass-panel">
+            <h2>Résultats</h2>
+            <div id="loading" class="loading"><div class="spinner"></div> Traitement en cours...</div>
+            <div id="map"></div>
+            <div id="result-container">En attente d'une requête...</div>
+        </div>
+    </div>
+
+    <script>
+        let mapInstance = null;
+        let geojsonLayer = null;
+
+        function renderMap(geojson) {
+            const mapDiv = document.getElementById('map');
+            if (!geojson || !geojson.features || geojson.features.length === 0) {
+                mapDiv.style.display = 'none';
+                return;
+            }
+            
+            mapDiv.style.display = 'block';
+            
+            if (!mapInstance) {
+                mapInstance = L.map('map').setView([33.8833, 10.0986], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                    maxZoom: 19
+                }).addTo(mapInstance);
+            }
+            
+            if (geojsonLayer) {
+                mapInstance.removeLayer(geojsonLayer);
+            }
+            
+            geojsonLayer = L.geoJSON(geojson, {
+                pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, {
+                        radius: 8,
+                        fillColor: "#ef4444",
+                        color: "#fff",
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    });
+                },
+                onEachFeature: function (feature, layer) {
+                    if (feature.properties) {
+                        layer.bindPopup(`<b>${feature.properties.category}</b><br>Crédibilité: ${(feature.properties.credibility * 100).toFixed(0)}%`);
+                    }
+                }
+            }).addTo(mapInstance);
+            
+            mapInstance.fitBounds(geojsonLayer.getBounds(), { padding: [30, 30], maxZoom: 15 });
+            setTimeout(() => { mapInstance.invalidateSize(); }, 200);
+        }
+
+        function setPrompt(text) {
+            document.getElementById('text-input').value = text;
+        }
+
+        const fileInput = document.getElementById('file-input');
+        const fileName = document.getElementById('file-name');
+
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                fileName.textContent = '✅ Image sélectionnée : ' + e.target.files[0].name;
+                fileName.style.color = '#10b981';
+            } else {
+                fileName.textContent = '📷 Cliquez pour joindre une image (Optionnel)';
+                fileName.style.color = '#94a3b8';
+            }
+        });
+
+        document.getElementById('chat-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const text = document.getElementById('text-input').value;
+            const file = fileInput.files[0];
+            
+            if (!text && !file) {
+                alert("Veuillez fournir du texte ou une image.");
+                return;
+            }
+
+            const formData = new FormData();
+            if (text) formData.append('text', text);
+            if (file) formData.append('file', file);
+
+            const resultContainer = document.getElementById('result-container');
+            const loading = document.getElementById('loading');
+
+            resultContainer.innerHTML = '';
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('/orchestrator/chat', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                loading.style.display = 'none';
+                
+                if (response.ok) {
+                    const isTransparency = data.agent === 'transparency';
+                    const agentColor = isTransparency ? '#3b82f6' : '#10b981';
+                    const agentIcon = isTransparency ? '🏭' : '♻️';
+                    const agentName = isTransparency ? 'Transparence' : 'Recyclage';
+                    
+                    let html = `<div class="tag" style="background: ${agentColor}">${agentIcon} Agent ${agentName}</div>\n`;
+                    html += JSON.stringify(data.response, null, 2);
+                    resultContainer.innerHTML = html;
+                    
+                    if (isTransparency && data.response.heatmap_geojson) {
+                        renderMap(data.response.heatmap_geojson);
+                    } else {
+                        renderMap(null); // Hide map
+                    }
+                } else {
+                    resultContainer.innerHTML = `<span style="color: #ef4444;">Erreur: ${data.detail || JSON.stringify(data)}</span>`;
+                }
+            } catch (err) {
+                loading.style.display = 'none';
+                resultContainer.innerHTML = `<span style="color: #ef4444;">Erreur de connexion: ${err.message}</span>`;
+            }
+        });
+    </script>
+</body>
+</html>
