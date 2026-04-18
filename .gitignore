@@ -6,3 +6,5 @@ __pycache__
 .venv
 .kilo
 .kiro
+.pytest_cache
+.vscode
