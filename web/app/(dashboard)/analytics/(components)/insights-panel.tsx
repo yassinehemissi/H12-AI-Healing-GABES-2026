@@ -17,7 +17,7 @@ export function InsightsPanel({ response }: InsightsPanelProps) {
   const { query_interpretation, insights, summary, data_sources } = response;
 
   return (
-    <Card>
+    <Card className="border-zinc-900/10 bg-white/85 dark:border-white/10 dark:bg-white/[0.02]">
       <CardHeader>
         <CardTitle>Insights</CardTitle>
       </CardHeader>

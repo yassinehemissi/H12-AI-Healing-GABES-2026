@@ -11,6 +11,8 @@ import {
   Compass,
   LineChart,
   Scale,
+  Globe,
+  BarChart,
 } from "lucide-react"
 
 import { signOutAction } from "@/app/(auth)/actions"
@@ -46,12 +48,16 @@ const citizenMenu = [
   { label: "Air Quality", icon: Activity, href: "/dashboard" },
   { label: "Amalin Core", icon: Compass, href: "/dashboard/amalin" },
   { label: "RSE Projects", icon: Briefcase, href: "/dashboard/rse-investment" },
+  { label: "AI Analytics", icon: BarChart, href: "/analytics" },
+  { label: "Global RSE", icon: Globe, href: "/rse" },
 ]
 
 const enterpriseMenu = [
   { label: "Executive Overview", icon: LineChart, href: "/dashboard" },
   { label: "RSE Projects", icon: Building2, href: "/dashboard" },
   { label: "Compliance Audit", icon: Scale, href: "/dashboard" },
+  { label: "AI Analytics", icon: BarChart, href: "/analytics" },
+  { label: "Global RSE", icon: Globe, href: "/rse" },
 ]
 
 export function DashboardShell({ children, user }: DashboardShellProps) {
