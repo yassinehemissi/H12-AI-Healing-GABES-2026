@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation"
 import {
   Activity,
   Bot,
+  Briefcase,
   Building2,
   Compass,
   LineChart,
@@ -47,6 +48,7 @@ const citizenMenu = [
   { label: "Air Quality", icon: Activity, href: "/dashboard" },
   { label: "Recycling", icon: Recycle, href: "/dashboard" },
   { label: "Citizen Chatbot", icon: Bot, href: "/dashboard" },
+  { label: "rse investisment", icon: Briefcase, href: "/dashboard/rse-investment" },
 ]
 
 const enterpriseMenu = [
