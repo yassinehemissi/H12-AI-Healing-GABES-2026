@@ -22,6 +22,7 @@ logging.basicConfig(
 default_cors_origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "https://synaptechh12.vercel.app",
 ]
 
 cors_origins_env = os.getenv("BACKEND_CORS_ORIGINS", "")

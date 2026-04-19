@@ -63,7 +63,9 @@ export function extractProjectFromDescription(description: string): ProjectPaylo
 }
 
 export function getApiBaseUrl() {
-  const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL?.trim()
+  const configuredApiUrl =
+    process.env.NEXT_PUBLIC_AMALIN_API_BASE_URL?.trim() ||
+    process.env.NEXT_PUBLIC_API_URL?.trim()
   return (configuredApiUrl || "http://localhost:8000").replace(/\/+$/, "")
 }
 

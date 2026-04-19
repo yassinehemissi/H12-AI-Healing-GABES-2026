@@ -6,12 +6,10 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   Activity,
-  Bot,
   Briefcase,
   Building2,
   Compass,
   LineChart,
-  Recycle,
   Scale,
 } from "lucide-react"
 
@@ -46,15 +44,13 @@ type DashboardShellProps = {
 
 const citizenMenu = [
   { label: "Air Quality", icon: Activity, href: "/dashboard" },
-  { label: "Recycling", icon: Recycle, href: "/dashboard" },
-  { label: "Citizen Chatbot", icon: Bot, href: "/dashboard" },
-  { label: "rse investisment", icon: Briefcase, href: "/dashboard/rse-investment" },
+  { label: "Amalin Core", icon: Compass, href: "/dashboard/amalin" },
+  { label: "RSE Projects", icon: Briefcase, href: "/dashboard/rse-investment" },
 ]
 
 const enterpriseMenu = [
   { label: "Executive Overview", icon: LineChart, href: "/dashboard" },
   { label: "RSE Projects", icon: Building2, href: "/dashboard" },
-  { label: "Amalin Core", icon: Compass, href: "/dashboard/amalin" },
   { label: "Compliance Audit", icon: Scale, href: "/dashboard" },
 ]
 
@@ -66,14 +62,14 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
     <SidebarProvider>
       <Sidebar variant="inset" collapsible="icon">
         <SidebarHeader>
-          <div className="flex items-center gap-2 rounded-2xl border border-sidebar-border bg-sidebar-accent p-2">
-            <div className="grid size-8 place-items-center overflow-hidden rounded-xl bg-white/80 p-1 dark:bg-white/10">
+          <div className="flex items-center gap-2 overflow-hidden rounded-2xl border border-sidebar-border bg-sidebar-accent p-2 group-data-[collapsible=icon]:size-10 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:p-1">
+            <div className="grid size-8 shrink-0 place-items-center overflow-hidden rounded-xl bg-white/80 p-1 dark:bg-white/10">
               <Image
                 src="/LOGO.png"
                 alt="GABBiEST logo"
                 width={28}
                 height={28}
-                className="size-7 object-contain"
+                className="size-7 shrink-0 object-contain"
                 priority
               />
             </div>
