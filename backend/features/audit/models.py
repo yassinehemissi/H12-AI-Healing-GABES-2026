@@ -33,6 +33,42 @@ class AuditRequest(BaseModel):
     analysis_depth: str = Field(
         "comprehensive", description="Analysis depth: basic, standard, comprehensive"
     )
+    inquiry: Optional[str] = Field(
+        None, description="Raw user inquiry used for conversation-aware routing"
+    )
+    conversation: List[Dict[str, str]] = Field(
+        default_factory=list,
+        description="Recent conversation turns, e.g. [{'role':'user','content':'...'}]",
+    )
+
+
+class AgentSummary(BaseModel):
+    """Compact summary payload returned per consulted agent."""
+
+    agent: str
+    executive_summary: str
+    key_findings: List[str] = Field(default_factory=list)
+    risks: List[str] = Field(default_factory=list)
+    recommendations: List[str] = Field(default_factory=list)
+    confidence: str = Field(default="medium")
+
+
+class SourceReference(BaseModel):
+    title: str
+    url: str
+    snippet: str = ""
+
+
+class AgentReport(BaseModel):
+    agent: str
+    system_message: str
+    executive_summary: str
+    findings: List[str] = Field(default_factory=list)
+    assumptions: List[str] = Field(default_factory=list)
+    risks: List[str] = Field(default_factory=list)
+    recommendations: List[str] = Field(default_factory=list)
+    confidence: str = Field(default="medium")
+    sources: List[SourceReference] = Field(default_factory=list)
 
 
 class LawAnalysis(BaseModel):
@@ -126,6 +162,10 @@ class AuditResult(BaseModel):
     roi_analysis: ROIAnalysis
     game_theory_analysis: GameTheoryAnalysis
     scientific_analysis: ScientificAnalysis
+    consulted_agents: List[str] = Field(default_factory=list)
+    inquiry_intent: str = Field(default="comprehensive")
+    agent_summaries: List[AgentSummary] = Field(default_factory=list)
+    agent_outputs: Dict[str, AgentReport] = Field(default_factory=dict)
     executive_summary: str = Field(..., description="Executive summary of findings")
     priority_actions: List[str] = Field(
         default_factory=list, description="Priority actions recommended"

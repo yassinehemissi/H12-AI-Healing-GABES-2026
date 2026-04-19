@@ -1,11 +1,21 @@
-from typing import List, Dict, Any
-from .models import ProjectDetails, LawAnalysis
+from typing import List, Dict, Any, Tuple
+
+from .models import AgentReport, LawAnalysis, ProjectDetails, SourceReference
+from .tavily_client import TavilyClient
 
 
 class LawAgent:
     """Agent for legal analysis using Tunisia laws database"""
 
     def __init__(self):
+        self.system_message = (
+            "You are a Tunisia-focused environmental legal analyst. "
+            "Assess compliance against Tunisian environmental, waste, industrial, "
+            "and permitting obligations. Highlight legal gaps, risk severity, and "
+            "practical corrective actions."
+        )
+        self.tavily = TavilyClient()
+
         # Initialize with Tunisia environmental and pollution laws
         self.tunisia_laws = {
             "environmental_protection": [
@@ -95,3 +105,44 @@ class LawAgent:
             recommendations=recommendations,
             risk_level=risk_level,
         )
+
+    def analyze_with_report(self, project: ProjectDetails) -> Tuple[LawAnalysis, AgentReport]:
+        analysis = self.analyze_project(project)
+        external_sources = self.tavily.search(
+            (
+                f"Tunisia environmental law Gabes {project.pollution_type} "
+                f"permitting impact assessment waste management"
+            ),
+            max_results=4,
+        )
+        sources = [
+            SourceReference(
+                title=item.get("title", "Source"),
+                url=item.get("url", ""),
+                snippet=item.get("snippet", ""),
+            )
+            for item in external_sources
+        ]
+
+        report = AgentReport(
+            agent="law",
+            system_message=self.system_message,
+            executive_summary=(
+                f"Legal assessment indicates {analysis.compliance_status} status "
+                f"with {analysis.risk_level} risk for Tunisian compliance."
+            ),
+            findings=[
+                f"Relevant Tunisian legal instruments identified: {len(analysis.relevant_laws)}",
+                f"Potential violations flagged: {len(analysis.violations)}",
+                f"Project location legal context: {project.location}",
+            ],
+            assumptions=[
+                "Final legal determination requires official permitting dossier.",
+                "Project scope may require authority-specific approvals beyond baseline rules.",
+            ],
+            risks=analysis.violations or ["No immediate critical legal violation identified."],
+            recommendations=analysis.recommendations[:6],
+            confidence="high" if analysis.risk_level in {"low", "medium"} else "medium",
+            sources=sources,
+        )
+        return analysis, report

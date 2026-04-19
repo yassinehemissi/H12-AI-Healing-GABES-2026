@@ -1,11 +1,20 @@
-from typing import Dict, List
-from .models import ProjectDetails, ScientificAnalysis
+from typing import Dict, List, Tuple
+
+from .models import AgentReport, ProjectDetails, ScientificAnalysis, SourceReference
+from .tavily_client import TavilyClient
 
 
 class ScientificAgent:
     """Agent for scientific and technical feasibility analysis"""
 
     def __init__(self):
+        self.system_message = (
+            "You are a scientific and engineering feasibility analyst for pollution-control "
+            "projects in Tunisia. Evaluate scientifically valid methods, implementation "
+            "constraints, and evidence quality before recommending pathways."
+        )
+        self.tavily = TavilyClient()
+
         # Tunisian infrastructure capabilities
         self.infrastructure = {
             "power_grid": {
@@ -108,6 +117,49 @@ class ScientificAgent:
             scalability_assessment=scalability_assessment,
             recommendations=recommendations,
         )
+
+    def analyze_with_report(
+        self, project: ProjectDetails
+    ) -> Tuple[ScientificAnalysis, AgentReport]:
+        analysis = self.analyze_project(project)
+        technologies = self._resolve_technologies(project)
+        external_sources = self.tavily.search(
+            (
+                f"scientific methods {project.pollution_type} remediation recycling "
+                f"{project.location} best practices evidence"
+            ),
+            max_results=4,
+        )
+        sources = [
+            SourceReference(
+                title=item.get("title", "Source"),
+                url=item.get("url", ""),
+                snippet=item.get("snippet", ""),
+            )
+            for item in external_sources
+        ]
+        report = AgentReport(
+            agent="scientific",
+            system_message=self.system_message,
+            executive_summary=(
+                f"Scientific feasibility is {analysis.technology_feasibility} with "
+                f"{analysis.infrastructure_compatibility} infrastructure compatibility."
+            ),
+            findings=[
+                f"Technology set evaluated: {', '.join(technologies) if technologies else 'not specified'}",
+                f"Scalability assessment: {analysis.scalability_assessment}",
+                f"Innovation potential score: {analysis.innovation_potential:.1f}/100",
+            ],
+            assumptions=[
+                "Pilot data and site characterization are still required for design validation.",
+                "Local implementation performance may vary by feedstock quality and process control.",
+            ],
+            risks=analysis.technical_risks[:6],
+            recommendations=analysis.recommendations[:6],
+            confidence="high" if analysis.technology_feasibility in {"high", "medium"} else "medium",
+            sources=sources,
+        )
+        return analysis, report
 
     def _resolve_technologies(self, project: ProjectDetails) -> List[str]:
         """Resolve technologies from explicit input or infer from project context."""

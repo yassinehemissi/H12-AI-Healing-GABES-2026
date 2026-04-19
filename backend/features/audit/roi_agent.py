@@ -1,12 +1,18 @@
 import math
-from typing import Dict, List
-from .models import ProjectDetails, ROIAnalysis
+from typing import Dict, List, Tuple
+
+from .models import AgentReport, ProjectDetails, ROIAnalysis
 
 
 class ROIAgent:
     """Agent for financial analysis and ROI forecasting"""
 
     def __init__(self):
+        self.system_message = (
+            "You are an environmental project financial analyst. "
+            "Compute ROI using full lifecycle costs: CAPEX, OPEX, permitting, "
+            "monitoring, compliance, financing, contingency, and downside scenarios."
+        )
         self.discount_rate = 0.08  # 8% discount rate for Tunisia
         self.inflation_rate = 0.05  # 5% inflation rate
         self.risk_premium = 0.03  # 3% risk premium for environmental projects
@@ -91,6 +97,47 @@ class ROIAgent:
             forecast_5year=forecast_5year,
             recommendations=recommendations,
         )
+
+    def analyze_with_report(self, project: ProjectDetails) -> Tuple[ROIAnalysis, AgentReport]:
+        analysis = self.analyze_project(project)
+        investment = project.estimated_budget or 0.0
+        contingency = investment * 0.12
+        permitting_costs = max(80_000.0, investment * 0.025) if investment else 80_000.0
+        compliance_monitoring = max(60_000.0, investment * 0.02) if investment else 60_000.0
+        financing_costs = max(70_000.0, investment * 0.03) if investment else 70_000.0
+        full_cost_baseline = (
+            investment
+            + contingency
+            + permitting_costs
+            + compliance_monitoring
+            + financing_costs
+        )
+        report = AgentReport(
+            agent="roi",
+            system_message=self.system_message,
+            executive_summary=(
+                f"Financial evaluation gives NPV {analysis.npv:,.0f} TND, IRR {analysis.irr:.1%}, "
+                f"and profitability score {analysis.profitability_score:.1f}/100."
+            ),
+            findings=[
+                f"Estimated base investment (CAPEX): {investment:,.0f} TND",
+                f"Lifecycle baseline incl. permitting/compliance/financing/contingency: {full_cost_baseline:,.0f} TND",
+                f"Risk-adjusted ROI: {analysis.risk_adjusted_roi:.1f}%",
+                f"Payback period: {analysis.payback_period_months} months",
+            ],
+            assumptions=[
+                "Cash-flow benefits grow gradually after commissioning.",
+                "Regulatory and compliance overhead is treated as recurring governance cost.",
+            ],
+            risks=(
+                ["Negative NPV under current assumptions"] if analysis.npv < 0 else []
+            )
+            + (["IRR below expected threshold"] if analysis.irr < self.discount_rate else []),
+            recommendations=analysis.recommendations[:6],
+            confidence="medium",
+            sources=[],
+        )
+        return analysis, report
 
     def _estimate_benefits(
         self, project: ProjectDetails, investment: float

@@ -1,11 +1,17 @@
-from typing import List, Dict, Any
-from .models import ProjectDetails, GameTheoryAnalysis
+from typing import Any, Dict, List, Tuple
+
+from .models import AgentReport, GameTheoryAnalysis, ProjectDetails
 
 
 class GameTheoryAgent:
     """Agent for game theory analysis of project stakeholders and decision optimization"""
 
     def __init__(self):
+        self.system_message = (
+            "You are a strategic game-theory analyst for multi-stakeholder "
+            "environmental projects. Identify parties, incentives, conflicts, "
+            "coalitions, and optimized implementation decisions."
+        )
         self.stakeholder_types = {
             "government": {"power": 0.9, "interest": 0.8, "influence": "high"},
             "local_community": {"power": 0.6, "interest": 0.9, "influence": "medium"},
@@ -50,6 +56,40 @@ class GameTheoryAgent:
             conflict_resolution=conflict_resolution,
             coalition_opportunities=coalition_opportunities,
         )
+
+    def analyze_with_report(
+        self, project: ProjectDetails
+    ) -> Tuple[GameTheoryAnalysis, AgentReport]:
+        analysis = self.analyze_project(project)
+        top_stakeholders = sorted(
+            analysis.stakeholders, key=lambda stakeholder: stakeholder.get("power", 0), reverse=True
+        )[:4]
+        top_names = [stakeholder.get("name", "Unknown") for stakeholder in top_stakeholders]
+
+        report = AgentReport(
+            agent="game_theory",
+            system_message=self.system_message,
+            executive_summary=(
+                f"Optimal strategic posture is '{analysis.optimal_strategy}' across "
+                f"{len(analysis.stakeholders)} mapped stakeholders."
+            ),
+            findings=[
+                f"Most influential parties: {', '.join(top_names) if top_names else 'not identified'}",
+                f"Negotiation points identified: {len(analysis.negotiation_points)}",
+                f"Coalition opportunities identified: {len(analysis.coalition_opportunities)}",
+            ],
+            assumptions=[
+                "Stakeholder incentives remain stable during initial implementation phases.",
+                "Regulatory actors maintain predictable enforcement posture.",
+            ],
+            risks=analysis.negotiation_points[:6],
+            recommendations=(
+                analysis.conflict_resolution[:3] + analysis.coalition_opportunities[:3]
+            )[:6],
+            confidence="medium",
+            sources=[],
+        )
+        return analysis, report
 
     def _identify_stakeholders(self, project: ProjectDetails) -> List[Dict[str, Any]]:
         """Identify and analyze project stakeholders"""
