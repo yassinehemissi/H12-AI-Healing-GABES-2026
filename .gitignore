@@ -5,3 +5,6 @@ __pycache__
 .env.local
 .venv
 .kilo
+.kiro
+.pytest_cache
+.vscode
