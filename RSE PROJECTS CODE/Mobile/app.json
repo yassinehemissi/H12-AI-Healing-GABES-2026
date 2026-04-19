@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "Gabes Eco Mobile",
+    "slug": "gabes-eco-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "gabes-eco-mobile",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "extra": {
+      "apiBaseUrl": "http://10.103.169.240:8000"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "app.gabes.eco.mobile",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow Gabes Eco Mobile to use your camera to analyze waste.",
+        "NSPhotoLibraryUsageDescription": "Allow Gabes Eco Mobile to use your photo library to analyze waste.",
+        "NSPhotoLibraryAddUsageDescription": "Allow Gabes Eco Mobile to save generated images to your photo library."
+      }
+    },
+    "android": {
+      "package": "app.gabes.eco.mobile",
+      "usesCleartextTraffic": true,
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_MEDIA_IMAGES"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Gabes Eco Mobile to access your photos to analyze waste.",
+          "cameraPermission": "Allow Gabes Eco Mobile to access your camera to analyze waste."
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow Gabes Eco Mobile to access your media library.",
+          "savePhotosPermission": "Allow Gabes Eco Mobile to save generated images to your gallery."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
