@@ -3,10 +3,13 @@ import { ExternalLink, Recycle, Route, Truck } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { PdfExportButton } from "../_components/pdf-export-button"
 
 export default function SmartWastePage() {
   return (
     <div className="mx-auto max-w-4xl space-y-6">
+      <PdfExportButton projectId="smart-waste" projectName="SmartWaste" />
+
       <div className="mb-6 flex flex-col gap-2">
         <div className="flex items-center gap-3">
           <Recycle className="size-8 text-emerald-500" />

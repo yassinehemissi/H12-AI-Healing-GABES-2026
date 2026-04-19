@@ -3,10 +3,13 @@ import { Activity, ExternalLink, ShieldAlert, Wind } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { PdfExportButton } from "../_components/pdf-export-button"
 
 export default function NH3ResilientPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-6">
+      <PdfExportButton projectId="nh3-resilient" projectName="NH3Resilient" />
+
       <div className="mb-6 flex flex-col gap-2">
         <div className="flex items-center gap-3">
           <Wind className="size-8 text-blue-500" />

@@ -34,6 +34,8 @@
     "framer-motion": "^12.38.0",
     "input-otp": "^1.4.2",
     "jose": "^6.2.2",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
     "lucide-react": "^1.8.0",
     "maplibre-gl": "^5.23.0",
     "media-chrome": "^4.19.0",
