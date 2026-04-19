@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -5,7 +6,6 @@ import {
   Brain,
   Building2,
   CheckCircle2,
-  Leaf,
   LineChart,
   ShieldCheck,
   Sparkles,
@@ -73,13 +73,17 @@ export default async function HomePage() {
       <div className="relative mx-auto flex w-full max-w-[1320px] flex-col px-4 pb-12 pt-6 sm:px-6 lg:px-8">
         <header className="flex flex-wrap items-center justify-between gap-3 rounded-4xl border border-zinc-900/10 bg-white/70 px-4 py-3 backdrop-blur-sm">
           <Link href={links.guest.home} className="flex items-center gap-2">
-            <div className="grid size-9 place-items-center rounded-2xl bg-zinc-950 text-white">
-              <Leaf className="size-4" />
+            <div className="flex h-10 w-[132px] items-center justify-center rounded-2xl  px-2">
+              <Image
+                src="/FULL LOGO.png"
+                alt="GABBiEST full logo"
+                width={146}
+                height={40}
+                className="h-auto w-auto max-h-12 object-contain"
+                priority
+              />
             </div>
-            <div>
-              <p className="text-sm font-semibold">GABBiEST</p>
-              <p className="text-xs text-zinc-500">AI Healing Platform</p>
-            </div>
+          
           </Link>
 
           <nav className="hidden items-center gap-6 md:flex">
@@ -259,6 +263,31 @@ export default async function HomePage() {
             </CardContent>
           </Card>
         </section>
+
+        <footer className="mt-14 rounded-4xl border border-zinc-900/10 bg-white/70 px-4 py-5 backdrop-blur-sm">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/FULL LOGO.png"
+                alt="GABBiEST full logo"
+                width={156}
+                height={38}
+                className="block h-auto w-auto max-h-9 object-contain dark:hidden"
+              />
+              <Image
+                src="/FULL_LOGO_DARK.png"
+                alt="GABBiEST full logo dark"
+                width={156}
+                height={38}
+                className="hidden h-auto w-auto max-h-9 object-contain dark:block"
+              />
+              <p className="text-xs text-zinc-500">
+                AI-powered environmental intelligence for Gabes operations.
+              </p>
+            </div>
+            <p className="text-xs text-zinc-500">© {new Date().getFullYear()} GABBiEST</p>
+          </div>
+        </footer>
       </div>
     </main>
   )

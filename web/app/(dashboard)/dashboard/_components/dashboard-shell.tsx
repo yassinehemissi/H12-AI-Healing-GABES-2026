@@ -1,6 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
@@ -8,7 +9,6 @@ import {
   Bot,
   Building2,
   Compass,
-  Leaf,
   LineChart,
   Recycle,
   Scale,
@@ -65,8 +65,15 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
       <Sidebar variant="inset" collapsible="icon">
         <SidebarHeader>
           <div className="flex items-center gap-2 rounded-2xl border border-sidebar-border bg-sidebar-accent p-2">
-            <div className="grid size-8 place-items-center rounded-xl bg-emerald-300 text-zinc-950">
-              <Leaf className="size-4" />
+            <div className="grid size-8 place-items-center overflow-hidden rounded-xl bg-white/80 p-1 dark:bg-white/10">
+              <Image
+                src="/LOGO.png"
+                alt="GABBiEST logo"
+                width={28}
+                height={28}
+                className="size-7 object-contain"
+                priority
+              />
             </div>
             <div className="group-data-[collapsible=icon]:hidden">
               <p className="text-sm font-semibold">GABBiEST</p>

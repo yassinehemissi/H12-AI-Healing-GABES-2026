@@ -19,6 +19,8 @@
   **Assistant reply summary:** Reworked Amalin from chat-thread UI to card-based audit generation, added MongoDB persistence with authenticated GET/POST API routes, and implemented automatic loading of saved audit cards for the current user.
 - **User prompt:** add pagination and card is to collapse and open just on open
   **Assistant reply summary:** Added server-side pagination to the Amalin audit list API (`page`, `limit`, `hasMore`) and updated the card UI to be collapsed by default with explicit open/collapse controls plus a load-more workflow.
+- **User prompt:** add the logo to the dashboard and landing there are different variants in the public use simple logo fro dashboard full logo for landing and foote
+  **Assistant reply summary:** Replaced dashboard icon branding with `public/LOGO.png`, updated landing header branding to use `public/FULL LOGO.png`, and added a landing footer brand block with full-logo variants including the dark-specific logo asset.
 - **User prompt:** switch to openai key
   **Assistant reply summary:** Updated audit service to use OpenAI GPT-4o-mini instead of Groq.
 - **User prompt:** integrate amalin on the web app under the amalin core page; make a plan
