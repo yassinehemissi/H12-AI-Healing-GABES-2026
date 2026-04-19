@@ -1,12 +1,14 @@
 "use client"
 
 import type { ReactNode } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import {
   Activity,
   Bot,
   Building2,
   Compass,
-  Leaf,
   LineChart,
   Recycle,
   Scale,
@@ -42,19 +44,20 @@ type DashboardShellProps = {
 }
 
 const citizenMenu = [
-  { label: "Air Quality", icon: Activity, active: true },
-  { label: "Recycling", icon: Recycle, active: false },
-  { label: "Citizen Chatbot", icon: Bot, active: false },
+  { label: "Air Quality", icon: Activity, href: "/dashboard" },
+  { label: "Recycling", icon: Recycle, href: "/dashboard" },
+  { label: "Citizen Chatbot", icon: Bot, href: "/dashboard" },
 ]
 
 const enterpriseMenu = [
-  { label: "Executive Overview", icon: LineChart, active: true },
-  { label: "RSE Projects", icon: Building2, active: false },
-  { label: "Amalin Core", icon: Compass, active: false },
-  { label: "Compliance Audit", icon: Scale, active: false },
+  { label: "Executive Overview", icon: LineChart, href: "/dashboard" },
+  { label: "RSE Projects", icon: Building2, href: "/dashboard" },
+  { label: "Amalin Core", icon: Compass, href: "/dashboard/amalin" },
+  { label: "Compliance Audit", icon: Scale, href: "/dashboard" },
 ]
 
 export function DashboardShell({ children, user }: DashboardShellProps) {
+  const pathname = usePathname()
   const menu = user.userType === "enterprise" ? enterpriseMenu : citizenMenu
 
   return (
@@ -62,8 +65,15 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
       <Sidebar variant="inset" collapsible="icon">
         <SidebarHeader>
           <div className="flex items-center gap-2 rounded-2xl border border-sidebar-border bg-sidebar-accent p-2">
-            <div className="grid size-8 place-items-center rounded-xl bg-emerald-300 text-zinc-950">
-              <Leaf className="size-4" />
+            <div className="grid size-8 place-items-center overflow-hidden rounded-xl bg-white/80 p-1 dark:bg-white/10">
+              <Image
+                src="/LOGO.png"
+                alt="GABBiEST logo"
+                width={28}
+                height={28}
+                className="size-7 object-contain"
+                priority
+              />
             </div>
             <div className="group-data-[collapsible=icon]:hidden">
               <p className="text-sm font-semibold">GABBiEST</p>
@@ -78,9 +88,11 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
             <SidebarMenu>
               {menu.map((item) => (
                 <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton isActive={item.active}>
-                    <item.icon />
-                    <span>{item.label}</span>
+                  <SidebarMenuButton isActive={pathname === item.href} asChild>
+                    <Link href={item.href}>
+                      <item.icon />
+                      <span>{item.label}</span>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
