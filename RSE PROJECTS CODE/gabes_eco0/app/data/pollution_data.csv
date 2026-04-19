@@ -1,0 +1,13 @@
+date,location,SO2_µg_m3,CO2_ppm,PM2.5_µg_m3,NO2_µg_m3,temperature_C,humidity_percent
+2024-01-15,Zone_Industrielle_Nord,145.2,420.5,78.3,62.1,18.5,65
+2024-01-15,Zone_Industrielle_Sud,198.7,445.2,95.6,78.4,19.2,68
+2024-01-15,Zone_Residentielle_Centre,45.3,398.1,32.1,28.5,18.8,63
+2024-01-15,Zone_Port,89.4,410.3,55.2,42.3,17.9,71
+2024-01-16,Zone_Industrielle_Nord,167.8,430.2,88.9,71.2,17.3,70
+2024-01-16,Zone_Industrielle_Sud,210.3,460.1,102.4,85.6,18.1,72
+2024-01-16,Zone_Residentielle_Centre,38.7,392.4,28.6,24.1,17.5,67
+2024-01-16,Zone_Port,76.3,405.8,48.7,38.9,16.8,74
+2024-01-17,Zone_Industrielle_Nord,234.5,455.8,112.7,94.3,20.1,58
+2024-01-17,Zone_Industrielle_Sud,289.1,478.3,134.2,108.7,21.0,55
+2024-01-17,Zone_Residentielle_Centre,67.2,408.7,45.8,39.6,19.8,60
+2024-01-17,Zone_Port,112.8,425.6,71.3,58.2,20.5,62

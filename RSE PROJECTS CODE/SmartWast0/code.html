@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SmartWaste Gabès - The Mineral Archive</title>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+<link href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#6f7973",
+                        "outline-variant": "#bec9c2",
+                        "surface": "#fef9f1",
+                        "on-tertiary-fixed": "#2f1500",
+                        "secondary-fixed-dim": "#9dcced",
+                        "tertiary-container": "#a65900",
+                        "surface-bright": "#fef9f1",
+                        "surface-dim": "#ded9d2",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#ece8e0",
+                        "surface-variant": "#e7e2da",
+                        "on-surface": "#1d1c17",
+                        "surface-container": "#f2ede5",
+                        "secondary": "#336380",
+                        "on-secondary-fixed": "#001e2e",
+                        "on-primary-fixed": "#002116",
+                        "primary": "#076148",
+                        "on-secondary-container": "#32627f",
+                        "on-secondary-fixed-variant": "#164b67",
+                        "on-tertiary-fixed-variant": "#6e3900",
+                        "surface-tint": "#196b51",
+                        "inverse-surface": "#32302b",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#824500",
+                        "inverse-on-surface": "#f5f0e8",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e7e2da",
+                        "on-surface-variant": "#3f4944",
+                        "on-primary-fixed-variant": "#00513b",
+                        "on-background": "#1d1c17",
+                        "on-tertiary-container": "#ffede1",
+                        "primary-fixed": "#a5f2d1",
+                        "tertiary-fixed-dim": "#ffb77d",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f8f3eb",
+                        "tertiary-fixed": "#ffdcc3",
+                        "secondary-fixed": "#c7e7ff",
+                        "secondary-container": "#aeddff",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#8ad6b6",
+                        "primary-fixed-dim": "#8ad6b6",
+                        "on-primary-container": "#baffe0",
+                        "on-tertiary": "#ffffff",
+                        "primary-container": "#2d7a5f",
+                        "on-error": "#ffffff",
+                        "background": "#fef9f1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Public Sans", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased pt-24 pb-12">
+<!-- Header -->
+<header class="fixed top-0 w-full z-50 bg-[#fef9f1]/80 backdrop-blur-xl bg-[#f8f3eb] flex justify-between items-center px-8 h-16 w-full flat no shadows border-b border-outline-variant/15">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-surface-container-lowest flex items-center justify-center shadow-[0_4px_16px_rgba(7,97,72,0.12)] overflow-hidden border border-outline-variant/20">
+<img alt="SmartWaste Gabès Logo" class="w-full h-full object-contain" src="../logo.png"/>
+</div>
+<div class="flex flex-col leading-none">
+<span class="font-label text-[10px] uppercase tracking-[0.24em] text-on-surface-variant">Municipalité</span>
+<h1 class="font-headline text-xl font-bold tracking-tighter text-[#076148]">SmartWaste Gabès</h1>
+</div>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-lowest px-3 py-1 rounded-full shadow-[0_2px_8px_rgba(29,28,23,0.04)]" id="api-status-badge">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse" id="api-status-dot"></span>
+<span class="font-label text-xs font-medium text-on-surface-variant uppercase tracking-wide" id="api-status-text">API Connectée</span>
+</div>
+</div>
+<div class="flex items-center gap-6 font-label text-sm text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span id="current-datetime">12 Nov 2024, 08:45</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>Gabès, Tunisie</span>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/30">
+<img alt="Administrator Avatar" class="w-full h-full object-cover" data-alt="professional portrait of municipal administrator in bright office lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxg5H-CIkMKpHhinNB8PqdrX6Tvip2SmQ_anl99lcsJ6S5VoQwgy-11qIIt5DjSXxGFSElMEiEH6V5N2FtDbcRW2N3EHIL191SfMAOriCdE09MyxhB2Q0FoAer9uRFSALplTEPityW1rIZvMzY6E1slBTpq4WGYF9mTYOSDlCReKcAusmxJ3daKYmb8nwyIhgF10Pk_MwhLICZ_mf3q5R9dMdegt8h733IhbbQtFKHhNEXYcW4KSKQACZrSzGQJpNm3wurx51Vdoo"/>
+</div>
+</div>
+</header>
+<main class="max-w-[1600px] mx-auto px-8 space-y-12">
+<!-- Section 1: KPIs (Bento Grid) -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
+<div class="lg:col-span-2 bg-surface-container-lowest p-6 rounded-xl relative overflow-hidden flex flex-col justify-between">
+<div class="absolute -right-4 -top-4 opacity-5 pointer-events-none">
+<span class="material-symbols-outlined text-[120px]">delete</span>
+</div>
+<span class="font-label text-sm text-on-surface-variant uppercase tracking-wider mb-8">Bacs Totaux</span>
+<div class="flex items-end justify-between">
+<span class="font-headline text-[3.5rem] leading-none font-bold text-primary" id="kpi-total-bins">100</span>
+<span class="font-label text-xs text-primary bg-primary-container/20 px-2 py-1 rounded-sm">+2 ce mois</span>
+</div>
+</div>
+<div class="lg:col-span-1 bg-surface-container-lowest p-6 rounded-xl flex flex-col justify-between border-l-4 border-error">
+<span class="font-label text-sm text-error uppercase tracking-wider mb-8">Critiques</span>
+<div class="flex items-end justify-between">
+<span class="font-headline text-[2.5rem] leading-none font-bold text-error" id="kpi-critical-bins">14</span>
+<span class="material-symbols-outlined text-error">warning</span>
+</div>
+</div>
+<div class="lg:col-span-1 bg-surface-container-lowest p-6 rounded-xl flex flex-col justify-between">
+<span class="font-label text-sm text-on-surface-variant uppercase tracking-wider mb-8">Remplissage Moy.</span>
+<div class="flex items-end justify-between">
+<span class="font-headline text-[2.5rem] leading-none font-bold text-on-surface" id="kpi-average-fill">62%</span>
+<div class="w-8 h-8 rounded-full border-4 border-secondary border-t-outline-variant/30 flex items-center justify-center"></div>
+</div>
+</div>
+<div class="lg:col-span-2 bg-surface-container-lowest p-6 rounded-xl flex flex-col justify-between bg-gradient-to-br from-surface-container-lowest to-surface-container-low">
+<span class="font-label text-sm text-on-surface-variant uppercase tracking-wider mb-8">Dernière Tournée</span>
+<div class="flex justify-between items-end">
+<div>
+<span class="block font-headline text-[2.5rem] leading-none font-bold text-on-surface" id="kpi-last-route-distance">42.5 <span class="text-xl text-outline">km</span></span>
+<span class="font-label text-xs text-on-surface-variant mt-2 block" id="kpi-last-route-duration">120 min estimées</span>
+</div>
+<div class="text-right">
+<span class="font-label text-xs text-on-surface-variant block uppercase">Camion Assisgné</span>
+<span class="font-headline text-lg font-bold text-secondary" id="kpi-last-route-truck">Hino 300</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: Map & Critical -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 bg-surface-container-lowest rounded-xl overflow-hidden h-[500px] relative">
+<!-- Map Placeholder -->
+<div class="absolute inset-0 bg-surface-container-high">
+<div class="w-full h-full" id="global-map"></div>
+</div>
+<div class="absolute top-4 left-4 flex gap-2">
+<div class="bg-surface-container-lowest/90 backdrop-blur-md px-3 py-2 rounded-lg shadow-[0_4px_16px_rgba(29,28,23,0.08)] flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<span class="font-label text-xs">&lt; 60%</span>
+</div>
+<div class="bg-surface-container-lowest/90 backdrop-blur-md px-3 py-2 rounded-lg shadow-[0_4px_16px_rgba(29,28,23,0.08)] flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-tertiary-container"></div>
+<span class="font-label text-xs">60 - 79%</span>
+</div>
+<div class="bg-surface-container-lowest/90 backdrop-blur-md px-3 py-2 rounded-lg shadow-[0_4px_16px_rgba(29,28,23,0.08)] flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-error"></div>
+<span class="font-label text-xs">≥ 80%</span>
+</div>
+</div>
+<!-- Map Markers Example -->
+<div class="absolute top-[40%] left-[30%] w-4 h-4 bg-error rounded-full border-2 border-white shadow-md hidden"></div>
+<div class="absolute top-[55%] left-[60%] w-4 h-4 bg-primary rounded-full border-2 border-white shadow-md hidden"></div>
+<div class="absolute top-[20%] left-[70%] w-4 h-4 bg-tertiary-container rounded-full border-2 border-white shadow-md hidden"></div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col h-[500px]">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline text-[1.75rem] font-bold text-on-surface tracking-tight">Bacs Critiques</h2>
+<span class="bg-error-container text-on-error-container font-label text-xs px-2 py-1 rounded-full font-bold" id="critical-total-badge">14 Total</span>
+</div>
+<div class="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar" id="critical-bins-list">
+<!-- Critical Bin Item -->
+<div class="bg-surface-container-lowest p-4 rounded-lg flex items-center justify-between shadow-[0_2px_8px_rgba(29,28,23,0.02)]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</div>
+<div>
+<span class="block font-headline font-semibold text-on-surface">Bac #1042</span>
+<span class="font-label text-xs text-on-surface-variant">33.8821, 10.1193</span>
+</div>
+</div>
+<span class="font-headline font-bold text-error text-lg">95%</span>
+</div>
+<!-- Critical Bin Item -->
+<div class="bg-surface-container-lowest p-4 rounded-lg flex items-center justify-between shadow-[0_2px_8px_rgba(29,28,23,0.02)]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</div>
+<div>
+<span class="block font-headline font-semibold text-on-surface">Bac #0891</span>
+<span class="font-label text-xs text-on-surface-variant">33.8845, 10.1120</span>
+</div>
+</div>
+<span class="font-headline font-bold text-error text-lg">88%</span>
+</div>
+<!-- Critical Bin Item -->
+<div class="bg-surface-container-lowest p-4 rounded-lg flex items-center justify-between shadow-[0_2px_8px_rgba(29,28,23,0.02)]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</div>
+<div>
+<span class="block font-headline font-semibold text-on-surface">Bac #2201</span>
+<span class="font-label text-xs text-on-surface-variant">33.8790, 10.1255</span>
+</div>
+</div>
+<span class="font-headline font-bold text-error text-lg">85%</span>
+</div>
+<!-- Critical Bin Item -->
+<div class="bg-surface-container-lowest p-4 rounded-lg flex items-center justify-between shadow-[0_2px_8px_rgba(29,28,23,0.02)]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</div>
+<div>
+<span class="block font-headline font-semibold text-on-surface">Bac #0442</span>
+<span class="font-label text-xs text-on-surface-variant">33.8901, 10.1080</span>
+</div>
+</div>
+<span class="font-headline font-bold text-error text-lg">82%</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Collection Launch -->
+<section class="bg-surface-container-highest p-8 rounded-xl">
+<div class="flex justify-between items-end mb-8 border-b border-outline-variant/20 pb-6">
+<div>
+<h2 class="font-headline text-[1.75rem] font-bold text-on-surface tracking-tight">Générer une tournée</h2>
+<p class="font-body text-sm text-on-surface-variant mt-2 max-w-xl">Configurez les paramètres pour l'optimisation de la route de collecte.</p>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex flex-col gap-2 min-w-[200px]">
+<label class="font-label text-xs uppercase tracking-wider text-on-surface-variant flex justify-between">
+<span>Nombre de bacs</span>
+<span class="font-bold text-primary" id="collect-count-label">65</span>
+</label>
+<div class="relative w-full h-2 bg-outline-variant/20 rounded-full">
+<div class="absolute top-0 left-0 h-full bg-primary rounded-full w-[80%]" id="collect-slider-fill"></div>
+<div class="absolute top-1/2 -translate-y-1/2 left-[80%] -translate-x-1/2 w-4 h-4 bg-secondary rounded-full border-2 border-white cursor-pointer shadow-sm" id="collect-slider-thumb"></div>
+<input class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" id="collect-count-slider" max="80" min="50" type="range" value="65"/>
+</div>
+<div class="flex justify-between text-[10px] text-outline mt-1">
+<span>50</span>
+<span>80</span>
+</div>
+</div>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="sr-only" id="collect-random-toggle" type="checkbox"/>
+<div class="w-5 h-5 border-2 border-outline rounded flex items-center justify-center" id="collect-random-box">
+<span class="material-symbols-outlined text-[14px] text-transparent" id="collect-random-icon">check</span>
+</div>
+<span class="font-label text-sm text-on-surface">Aléatoire</span>
+</label>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-3 rounded-lg font-headline font-bold tracking-wide shadow-[0_4px_16px_rgba(7,97,72,0.2)] hover:opacity-90 transition-opacity flex items-center gap-2" id="collect-button">
+<span class="flex items-center justify-center" id="collect-button-icon-wrapper"><span class="material-symbols-outlined text-[20px]" id="collect-button-icon">route</span></span>
+                        Lancer l'optimisation
+                    </button>
+</div>
+</div>
+<!-- Results Block -->
+<div class="grid grid-cols-1 gap-6">
+<!-- Truck Info & Metrics -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
+<div class="bg-surface-container-lowest p-5 rounded-xl h-full">
+<h3 class="font-label text-xs uppercase tracking-wider text-on-surface-variant mb-4">Véhicule Assigné</h3>
+<div class="flex items-center gap-4 mb-4">
+<div class="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">local_shipping</span>
+</div>
+<div>
+<span class="font-headline font-bold text-lg text-on-surface block" id="assigned-truck-name">Volvo FL</span>
+<span class="font-label text-xs text-on-surface-variant" id="assigned-truck-series">TN-982-441</span>
+</div>
+</div>
+<div class="flex justify-between border-t border-outline-variant/15 pt-4">
+<span class="font-label text-xs text-on-surface-variant">Capacité</span>
+<span class="font-headline text-sm font-bold text-on-surface" id="assigned-truck-capacity">15 Tonnes</span>
+</div>
+</div>
+<div class="contents">
+<div class="bg-surface-container-lowest p-4 rounded-xl flex flex-col justify-between h-full">
+<span class="font-label text-[10px] uppercase text-outline block mb-1">Distance</span>
+<span class="font-headline font-bold text-xl text-primary" id="metric-distance">28.4 <span class="text-xs">km</span></span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl flex flex-col justify-between h-full">
+<span class="font-label text-[10px] uppercase text-outline block mb-1">Durée Est.</span>
+<span class="font-headline font-bold text-xl text-primary" id="metric-duration">85 <span class="text-xs">min</span></span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl flex justify-between items-center h-full">
+<span class="font-label text-xs uppercase text-outline">Bacs à collecter</span>
+<span class="font-headline font-bold text-xl text-primary" id="metric-total-bins">32</span>
+</div>
+</div>
+</div>
+<!-- Route Map Placeholder -->
+<div class="w-full bg-surface-container-low rounded-xl relative overflow-hidden border border-outline-variant/15" style="min-height: 560px;">
+<div class="absolute inset-0" id="route-map"></div>
+<div class="absolute inset-0 flex items-center justify-center z-[400] pointer-events-none" id="route-empty-state">
+<div class="bg-surface-container-lowest/80 backdrop-blur-md p-4 rounded-lg border border-outline-variant/30 flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-primary text-3xl">route</span>
+<span class="font-headline text-sm font-bold text-on-surface">Tracé Généré</span>
+</div>
+</div>
+</div>
+<!-- Timeline / Table -->
+<div class="w-full bg-surface-container-lowest rounded-xl p-5 flex flex-col">
+<h3 class="font-label text-xs uppercase tracking-wider text-on-surface-variant mb-4">Séquence de collecte</h3>
+<div class="max-h-[360px] overflow-y-auto pr-2 custom-scrollbar">
+<div class="relative border-l-2 border-outline-variant/30 ml-3 space-y-6 pb-4" id="route-timeline">
+<!-- Stop 1 -->
+<div class="relative pl-6">
+<div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-primary border-2 border-white"></div>
+<div class="flex justify-between items-start">
+<div>
+<span class="font-headline text-sm font-bold block">Départ Dépôt</span>
+<span class="font-label text-xs text-on-surface-variant">08:00</span>
+</div>
+</div>
+</div>
+<!-- Stop 2 -->
+<div class="relative pl-6">
+<div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-surface-container-highest border-2 border-primary"></div>
+<div class="flex justify-between items-start">
+<div>
+<span class="font-headline text-sm font-bold block text-on-surface">Bac #1042</span>
+<span class="font-label text-[10px] text-error font-semibold bg-error-container/50 px-1.5 py-0.5 rounded">95% Rempli</span>
+</div>
+<span class="font-label text-xs text-outline font-medium">Ordre: 1</span>
+</div>
+</div>
+<!-- Stop 3 -->
+<div class="relative pl-6">
+<div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-surface-container-highest border-2 border-primary"></div>
+<div class="flex justify-between items-start">
+<div>
+<span class="font-headline text-sm font-bold block text-on-surface">Bac #0891</span>
+<span class="font-label text-[10px] text-error font-semibold bg-error-container/50 px-1.5 py-0.5 rounded">88% Rempli</span>
+</div>
+<span class="font-label text-xs text-outline font-medium">Ordre: 2</span>
+</div>
+</div>
+<!-- Stop 4 -->
+<div class="relative pl-6">
+<div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-surface-container-highest border-2 border-primary"></div>
+<div class="flex justify-between items-start">
+<div>
+<span class="font-headline text-sm font-bold block text-on-surface">Bac #2201</span>
+<span class="font-label text-[10px] text-error font-semibold bg-error-container/50 px-1.5 py-0.5 rounded">85% Rempli</span>
+</div>
+<span class="font-label text-xs text-outline font-medium">Ordre: 3</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 5: All Bins (Table) -->
+<section class="bg-surface-container-lowest rounded-xl pt-8 pb-4">
+<div class="px-8 flex justify-between items-center mb-8">
+<h2 class="font-headline text-[1.75rem] font-bold text-on-surface tracking-tight">Inventaire des Bacs</h2>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-[20px]">search</span>
+<input class="pl-10 pr-4 py-2 rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary text-sm font-body w-64" id="inventory-search" placeholder="Rechercher un ID..." type="text"/>
+</div>
+<select class="bg-surface-container-low border-none text-sm font-body rounded-lg py-2 pl-4 pr-10 focus:ring-2 focus:ring-primary appearance-none cursor-pointer" id="inventory-filter">
+<option value="all">Tous les états</option>
+<option value="critical">Critique (≥80%)</option>
+<option value="medium">Moyen (60-79%)</option>
+<option value="normal">Faible (&lt;60%)</option>
+</select>
+</div>
+</div>
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left font-body">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="py-4 px-8 font-label text-xs uppercase text-outline-variant font-semibold tracking-wider w-24">ID</th>
+<th class="py-4 px-8 font-label text-xs uppercase text-outline-variant font-semibold tracking-wider">Coordonnées (Lat, Lng)</th>
+<th class="py-4 px-8 font-label text-xs uppercase text-outline-variant font-semibold tracking-wider text-right">Niveau</th>
+<th class="py-4 px-8 font-label text-xs uppercase text-outline-variant font-semibold tracking-wider w-32">Statut</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/15" id="inventory-table-body">
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 px-8 font-headline font-bold text-sm text-on-surface">#1042</td>
+<td class="py-4 px-8 text-sm text-on-surface-variant font-mono text-xs">33.8821, 10.1193</td>
+<td class="py-4 px-8 text-right font-headline font-bold text-error">95%</td>
+<td class="py-4 px-8">
+<span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-error-container text-on-error-container w-24">Critique</span>
+</td>
+</tr>
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 px-8 font-headline font-bold text-sm text-on-surface">#0891</td>
+<td class="py-4 px-8 text-sm text-on-surface-variant font-mono text-xs">33.8845, 10.1120</td>
+<td class="py-4 px-8 text-right font-headline font-bold text-error">88%</td>
+<td class="py-4 px-8">
+<span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-error-container text-on-error-container w-24">Critique</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 px-8 font-headline font-bold text-sm text-on-surface">#1102</td>
+<td class="py-4 px-8 text-sm text-on-surface-variant font-mono text-xs">33.8710, 10.1050</td>
+<td class="py-4 px-8 text-right font-headline font-bold text-tertiary-container">65%</td>
+<td class="py-4 px-8">
+<span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-tertiary-container/20 text-tertiary w-24">Moyen</span>
+</td>
+</tr>
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 px-8 font-headline font-bold text-sm text-on-surface">#3304</td>
+<td class="py-4 px-8 text-sm text-on-surface-variant font-mono text-xs">33.8950, 10.1300</td>
+<td class="py-4 px-8 text-right font-headline font-bold text-primary">22%</td>
+<td class="py-4 px-8">
+<span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary-container/20 text-primary w-24">Normal</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 px-8 font-headline font-bold text-sm text-on-surface">#0098</td>
+<td class="py-4 px-8 text-sm text-on-surface-variant font-mono text-xs">33.8800, 10.1200</td>
+<td class="py-4 px-8 text-right font-headline font-bold text-primary">45%</td>
+<td class="py-4 px-8">
+<span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary-container/20 text-primary w-24">Normal</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-8 py-4 border-t border-outline-variant/15 flex justify-between items-center text-sm text-on-surface-variant">
+<span id="inventory-pagination-label">Affichage 1-5 de 100</span>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded flex items-center justify-center border border-outline-variant/30 hover:bg-surface-container-low" id="inventory-prev-page"><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
+<button class="w-8 h-8 rounded flex items-center justify-center border border-outline-variant/30 hover:bg-surface-container-low" id="inventory-next-page"><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
+</div>
+</div>
+</section>
+</main>
+<footer class="w-full py-8 mt-auto border-t border-[#bec9c2]/15 bg-[#f8f3eb] flex justify-between items-center px-8 text-[#076148] font-inter text-xs text-[#4A5568]">
+<div class="font-bold text-[#076148]">© 2024 Municipality of Gabès - Mineral Archive Design System</div>
+<div class="flex gap-6">
+<a class="text-[#4A5568] hover:text-[#1d1c17] opacity-80" href="#">Privacy Policy</a>
+<a class="text-[#4A5568] hover:text-[#1d1c17] opacity-80" href="#">Terms of Service</a>
+<a class="text-[#4A5568] hover:text-[#1d1c17] opacity-80" href="#">Data API</a>
+</div>
+</footer>
+<div class="fixed bottom-6 right-6 z-[1000] flex flex-col gap-3 pointer-events-none" id="toast-container"></div>
+<style>
+        #global-map,
+        #route-map {
+            width: 100%;
+            height: 100%;
+        }
+        .leaflet-container {
+            background: #ece8e0;
+        }
+        .route-number-marker {
+            width: 30px;
+            height: 30px;
+            border-radius: 9999px;
+            border: 2px solid #ffffff;
+            box-shadow: 0 4px 16px rgba(29, 28, 23, 0.12);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Inter, sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .route-depot-marker {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            border: 2px solid #ffffff;
+            box-shadow: 0 4px 16px rgba(29, 28, 23, 0.12);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Inter, sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+        }
+        .pulse-skeleton {
+            display: inline-block;
+            background: #ece8e0;
+            border-radius: 0.5rem;
+            animation: pulse-skeleton 1.5s ease-in-out infinite;
+        }
+        .button-spinner {
+            width: 20px;
+            height: 20px;
+            border-radius: 9999px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            animation: spin-loader 0.8s linear infinite;
+        }
+        @keyframes pulse-skeleton {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.45;
+            }
+        }
+        @keyframes spin-loader {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: theme('colors.outline-variant');
+            border-radius: 20px;
+        }
+    </style>
+<script>
+        const API_BASE = "http://localhost:8000";
+        const DEPOT = { lat: 33.8815, lng: 10.0982 };
+        const PAGE_SIZE = 10;
+        const COLORS = {
+            primary: "#076148",
+            tertiary: "#a65900",
+            error: "#ba1a1a"
+        };
+
+        const state = {
+            bins: [],
+            filteredBins: [],
+            currentPage: 1,
+            globalMap: null,
+            routeMap: null,
+            globalLayerGroup: null,
+            routeLayerGroup: null,
+            currentRoutingControl: null
+        };
+
+        const elements = {
+            apiStatusText: document.getElementById("api-status-text"),
+            apiStatusDot: document.getElementById("api-status-dot"),
+            currentDatetime: document.getElementById("current-datetime"),
+            kpiTotalBins: document.getElementById("kpi-total-bins"),
+            kpiCriticalBins: document.getElementById("kpi-critical-bins"),
+            kpiAverageFill: document.getElementById("kpi-average-fill"),
+            kpiLastRouteDistance: document.getElementById("kpi-last-route-distance"),
+            kpiLastRouteDuration: document.getElementById("kpi-last-route-duration"),
+            kpiLastRouteTruck: document.getElementById("kpi-last-route-truck"),
+            criticalTotalBadge: document.getElementById("critical-total-badge"),
+            criticalBinsList: document.getElementById("critical-bins-list"),
+            collectCountSlider: document.getElementById("collect-count-slider"),
+            collectCountLabel: document.getElementById("collect-count-label"),
+            collectSliderFill: document.getElementById("collect-slider-fill"),
+            collectSliderThumb: document.getElementById("collect-slider-thumb"),
+            collectRandomToggle: document.getElementById("collect-random-toggle"),
+            collectRandomBox: document.getElementById("collect-random-box"),
+            collectRandomIcon: document.getElementById("collect-random-icon"),
+            collectButton: document.getElementById("collect-button"),
+            collectButtonIconWrapper: document.getElementById("collect-button-icon-wrapper"),
+            assignedTruckName: document.getElementById("assigned-truck-name"),
+            assignedTruckSeries: document.getElementById("assigned-truck-series"),
+            assignedTruckCapacity: document.getElementById("assigned-truck-capacity"),
+            metricDistance: document.getElementById("metric-distance"),
+            metricDuration: document.getElementById("metric-duration"),
+            metricTotalBins: document.getElementById("metric-total-bins"),
+            routeEmptyState: document.getElementById("route-empty-state"),
+            routeTimeline: document.getElementById("route-timeline"),
+            inventorySearch: document.getElementById("inventory-search"),
+            inventoryFilter: document.getElementById("inventory-filter"),
+            inventoryTableBody: document.getElementById("inventory-table-body"),
+            inventoryPaginationLabel: document.getElementById("inventory-pagination-label"),
+            inventoryPrevPage: document.getElementById("inventory-prev-page"),
+            inventoryNextPage: document.getElementById("inventory-next-page"),
+            toastContainer: document.getElementById("toast-container")
+        };
+
+        function createSkeleton(widthClass, heightClass) {
+            return '<span class="pulse-skeleton ' + widthClass + " " + heightClass + '"></span>';
+        }
+
+        function formatCoordinate(value) {
+            return Number(value).toFixed(4);
+        }
+
+        function getStatusMeta(fillLevel) {
+            if (fillLevel >= 80) {
+                return {
+                    key: "critical",
+                    label: "Critique",
+                    color: COLORS.error,
+                    valueClass: "text-error",
+                    badgeClass: "bg-error-container text-on-error-container",
+                    timelineClass: "text-error bg-error-container/50"
+                };
+            }
+            if (fillLevel >= 60) {
+                return {
+                    key: "medium",
+                    label: "Moyen",
+                    color: COLORS.tertiary,
+                    valueClass: "text-tertiary-container",
+                    badgeClass: "bg-tertiary-container/20 text-tertiary",
+                    timelineClass: "text-tertiary bg-tertiary-container/20"
+                };
+            }
+            return {
+                key: "normal",
+                label: "Normal",
+                color: COLORS.primary,
+                valueClass: "text-primary",
+                badgeClass: "bg-primary-container/20 text-primary",
+                timelineClass: "text-primary bg-primary-container/20"
+            };
+        }
+
+        function normalizeBinsPayload(payload) {
+            if (Array.isArray(payload)) {
+                return { total: payload.length, bins: payload };
+            }
+            if (payload && Array.isArray(payload.bins)) {
+                return { total: payload.total != null ? payload.total : payload.bins.length, bins: payload.bins };
+            }
+            return { total: 0, bins: [] };
+        }
+
+        async function fetchJson(path) {
+            const response = await fetch(API_BASE + path);
+            if (!response.ok) {
+                throw new Error("HTTP " + response.status);
+            }
+            return response.json();
+        }
+
+        function showToast(message, type) {
+            const toast = document.createElement("div");
+            toast.className = "rounded-xl font-label px-4 py-3 text-sm";
+            toast.style.backgroundColor = type === "error" ? COLORS.error : type === "warning" ? COLORS.tertiary : COLORS.primary;
+            toast.style.color = "#ffffff";
+            toast.style.pointerEvents = "auto";
+            toast.style.boxShadow = "0 8px 24px rgba(29, 28, 23, 0.16)";
+            toast.textContent = message;
+            elements.toastContainer.appendChild(toast);
+            window.setTimeout(function () {
+                toast.remove();
+            }, 3000);
+        }
+
+        function updateDateTime() {
+            const formatter = new Intl.DateTimeFormat("fr-FR", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            });
+            elements.currentDatetime.textContent = formatter.format(new Date());
+        }
+
+        function setApiStatus(isOnline) {
+            elements.apiStatusText.textContent = isOnline ? "API Connectée" : "API Hors ligne";
+            elements.apiStatusText.style.color = isOnline ? "" : COLORS.error;
+            elements.apiStatusDot.style.backgroundColor = isOnline ? "" : COLORS.error;
+        }
+
+        function setInitialLoadingState() {
+            elements.kpiTotalBins.innerHTML = createSkeleton("w-24", "h-14");
+            elements.kpiCriticalBins.innerHTML = createSkeleton("w-16", "h-10");
+            elements.kpiAverageFill.innerHTML = createSkeleton("w-20", "h-10");
+            elements.kpiLastRouteDistance.innerHTML = createSkeleton("w-24", "h-10");
+            elements.kpiLastRouteDuration.innerHTML = createSkeleton("w-24", "h-4");
+            elements.kpiLastRouteTruck.innerHTML = createSkeleton("w-20", "h-5");
+            elements.criticalTotalBadge.innerHTML = createSkeleton("w-16", "h-4");
+            renderCriticalSkeletons();
+            renderInventorySkeletons();
+            setCollectionDefaults();
+        }
+
+        function renderCriticalSkeletons() {
+            elements.criticalBinsList.innerHTML = Array.from({ length: 4 }).map(function () {
+                return '' +
+                    '<div class="bg-surface-container-lowest p-4 rounded-lg flex items-center justify-between shadow-[0_2px_8px_rgba(29,28,23,0.02)]">' +
+                    '<div class="flex items-center gap-4">' +
+                    '<div class="w-10 h-10 rounded-full pulse-skeleton"></div>' +
+                    '<div><span class="block pulse-skeleton h-4 w-24 mb-2"></span><span class="block pulse-skeleton h-3 w-28"></span></div>' +
+                    '</div><span class="block pulse-skeleton h-5 w-10"></span></div>';
+            }).join("");
+        }
+
+        function renderInventorySkeletons() {
+            elements.inventoryTableBody.innerHTML = Array.from({ length: PAGE_SIZE }).map(function (_, index) {
+                return '' +
+                    '<tr class="' + (index % 2 === 1 ? "bg-surface-container-lowest " : "") + 'hover:bg-surface-container-low/50 transition-colors">' +
+                    '<td class="py-4 px-8"><span class="block pulse-skeleton h-4 w-12"></span></td>' +
+                    '<td class="py-4 px-8"><span class="block pulse-skeleton h-4 w-32"></span></td>' +
+                    '<td class="py-4 px-8 text-right"><span class="inline-block pulse-skeleton h-4 w-10"></span></td>' +
+                    '<td class="py-4 px-8"><span class="inline-block pulse-skeleton h-6 w-20"></span></td>' +
+                    "</tr>";
+            }).join("");
+            elements.inventoryPaginationLabel.textContent = "Affichage -- de --";
+        }
+
+        function setCollectionDefaults() {
+            elements.assignedTruckName.textContent = "--";
+            elements.assignedTruckSeries.textContent = "--";
+            elements.assignedTruckCapacity.textContent = "--";
+            elements.metricDistance.innerHTML = '-- <span class="text-xs">km</span>';
+            elements.metricDuration.innerHTML = '-- <span class="text-xs">min</span>';
+            elements.metricTotalBins.textContent = "--";
+            elements.kpiLastRouteDistance.innerHTML = '-- <span class="text-xl text-outline">km</span>';
+            elements.kpiLastRouteDuration.textContent = "-- min estimées";
+            elements.kpiLastRouteTruck.textContent = "--";
+            elements.routeTimeline.innerHTML = '' +
+                '<div class="relative pl-6">' +
+                '<div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-primary border-2 border-white"></div>' +
+                '<div class="flex justify-between items-start"><div><span class="font-headline text-sm font-bold block">Aucune tournée générée</span><span class="font-label text-xs text-on-surface-variant">Lancez l&apos;optimisation pour afficher la séquence.</span></div></div>' +
+                "</div>";
+            elements.routeEmptyState.style.display = "flex";
+        }
+
+        function updateSliderUi() {
+            const value = Number(elements.collectCountSlider.value);
+            const min = Number(elements.collectCountSlider.min);
+            const max = Number(elements.collectCountSlider.max);
+            const ratio = ((value - min) / (max - min)) * 100;
+            elements.collectCountLabel.textContent = String(value);
+            elements.collectSliderFill.style.width = ratio + "%";
+            elements.collectSliderThumb.style.left = ratio + "%";
+        }
+
+        function updateRandomUi() {
+            const checked = elements.collectRandomToggle.checked;
+            elements.collectRandomIcon.style.color = checked ? COLORS.primary : "transparent";
+            elements.collectRandomBox.style.backgroundColor = checked ? "rgba(138, 214, 182, 0.25)" : "";
+        }
+
+        function setCollectButtonLoading(isLoading) {
+            elements.collectButton.disabled = isLoading;
+            elements.collectButton.style.opacity = isLoading ? "0.8" : "";
+            elements.collectButton.style.cursor = isLoading ? "wait" : "";
+            elements.collectButtonIconWrapper.innerHTML = isLoading
+                ? '<div class="button-spinner"></div>'
+                : '<span class="material-symbols-outlined text-[20px]" id="collect-button-icon">route</span>';
+        }
+
+        function createDepotIcon(label) {
+            return L.divIcon({
+                className: "",
+                html: '<div class="route-depot-marker" style="background-color:' + COLORS.primary + ';">' + label + "</div>",
+                iconSize: [28, 28],
+                iconAnchor: [14, 14]
+            });
+        }
+
+        function createNumberedIcon(order, fillLevel) {
+            return L.divIcon({
+                className: "",
+                html: '<div class="route-number-marker" style="background-color:' + getStatusMeta(fillLevel).color + ';">' + order + "</div>",
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+            });
+        }
+
+        function initMaps() {
+            state.globalMap = L.map("global-map").setView([DEPOT.lat, DEPOT.lng], 13);
+            L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+                attribution: "&copy; OpenStreetMap &copy; CARTO",
+                subdomains: "abcd",
+                maxZoom: 19
+            }).addTo(state.globalMap);
+            state.globalLayerGroup = L.layerGroup().addTo(state.globalMap);
+
+            state.routeMap = L.map("route-map").setView([DEPOT.lat, DEPOT.lng], 13);
+            L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+                attribution: "&copy; OpenStreetMap &copy; CARTO",
+                subdomains: "abcd",
+                maxZoom: 19
+            }).addTo(state.routeMap);
+            state.routeLayerGroup = L.layerGroup().addTo(state.routeMap);
+
+            window.setTimeout(function () {
+                state.globalMap.invalidateSize();
+                state.routeMap.invalidateSize();
+            }, 0);
+        }
+
+        function renderGlobalMap(bins) {
+            state.globalLayerGroup.clearLayers();
+            L.marker([DEPOT.lat, DEPOT.lng], { icon: createDepotIcon("D") }).bindPopup("Dépôt Municipal").addTo(state.globalLayerGroup);
+
+            bins.forEach(function (bin) {
+                const meta = getStatusMeta(bin.fill_level);
+                L.circleMarker([bin.lat, bin.lng], {
+                    radius: 7,
+                    color: meta.color,
+                    fillColor: meta.color,
+                    fillOpacity: 0.85,
+                    weight: 1
+                }).bindPopup("Bac #" + bin.id + " — " + bin.fill_level + "%").addTo(state.globalLayerGroup);
+            });
+
+            state.globalMap.invalidateSize();
+        }
+
+        function renderKpis(total, bins) {
+            const criticalCount = bins.filter(function (bin) {
+                return bin.fill_level >= 80;
+            }).length;
+            const averageFill = bins.length ? bins.reduce(function (sum, bin) {
+                return sum + Number(bin.fill_level || 0);
+            }, 0) / bins.length : 0;
+
+            elements.kpiTotalBins.textContent = String(total);
+            elements.kpiCriticalBins.textContent = String(criticalCount);
+            elements.kpiAverageFill.textContent = averageFill.toFixed(1) + "%";
+        }
+
+        function renderCriticalBins(bins) {
+            const criticalBins = bins.filter(function (bin) {
+                return bin.fill_level >= 80;
+            }).sort(function (a, b) {
+                return b.fill_level - a.fill_level;
+            });
+
+            elements.criticalTotalBadge.textContent = criticalBins.length + " Total";
+
+            elements.criticalBinsList.innerHTML = criticalBins.map(function (bin) {
+                return '' +
+                    '<div class="bg-surface-container-lowest p-4 rounded-lg flex items-center justify-between shadow-[0_2px_8px_rgba(29,28,23,0.02)]">' +
+                    '<div class="flex items-center gap-4">' +
+                    '<div class="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center text-error"><span class="material-symbols-outlined text-[20px]">delete</span></div>' +
+                    '<div><span class="block font-headline font-semibold text-on-surface">Bac #' + bin.id + "</span>" +
+                    '<span class="font-label text-xs text-on-surface-variant">' + formatCoordinate(bin.lat) + ", " + formatCoordinate(bin.lng) + "</span></div>" +
+                    "</div>" +
+                    '<span class="font-headline font-bold text-error text-lg">' + bin.fill_level + "%</span></div>";
+            }).join("") || '' +
+                '<div class="bg-surface-container-lowest p-4 rounded-lg shadow-[0_2px_8px_rgba(29,28,23,0.02)]">' +
+                '<span class="font-headline font-semibold text-on-surface block mb-1">Aucun bac critique</span>' +
+                '<span class="font-label text-xs text-on-surface-variant">Tous les bacs sont sous le seuil critique.</span>' +
+                "</div>";
+        }
+
+        function renderTimeline(routePoints) {
+            const sortedRoute = routePoints.slice().sort(function (a, b) {
+                return (a.order || 0) - (b.order || 0);
+            });
+
+            elements.routeTimeline.innerHTML = sortedRoute.map(function (point, index) {
+                if (point.type === "depot") {
+                    return '' +
+                        '<div class="relative pl-6">' +
+                        '<div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-primary border-2 border-white"></div>' +
+                        '<div class="flex justify-between items-start"><div><span class="font-headline text-sm font-bold block">' + (index === 0 ? "Départ Dépôt" : "Retour Dépôt") + '</span><span class="font-label text-xs text-on-surface-variant">Ordre: ' + point.order + "</span></div></div>" +
+                        "</div>";
+                }
+
+                const meta = getStatusMeta(point.fill_level);
+                return '' +
+                    '<div class="relative pl-6">' +
+                    '<div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-surface-container-highest border-2 border-primary"></div>' +
+                    '<div class="flex justify-between items-start"><div><span class="font-headline text-sm font-bold block text-on-surface">Bac #' + point.id + '</span><span class="font-label text-[10px] font-semibold px-1.5 py-0.5 rounded ' + meta.timelineClass + '">' + point.fill_level + '% Rempli</span></div><span class="font-label text-xs text-outline font-medium">Ordre: ' + point.order + "</span></div>" +
+                    "</div>";
+            }).join("");
+        }
+
+        function renderRouteMap(routePoints) {
+            if (state.currentRoutingControl) {
+                state.routeMap.removeControl(state.currentRoutingControl);
+                state.currentRoutingControl = null;
+            }
+
+            state.routeLayerGroup.clearLayers();
+
+            if (!routePoints.length) {
+                elements.routeEmptyState.style.display = "flex";
+                state.routeMap.setView([DEPOT.lat, DEPOT.lng], 13);
+                state.routeMap.invalidateSize();
+                return;
+            }
+
+            elements.routeEmptyState.style.display = "none";
+
+            const sortedRoute = routePoints.slice().sort(function (a, b) {
+                return (a.order || 0) - (b.order || 0);
+            });
+            const latLngs = sortedRoute.map(function (point) {
+                return [point.lat, point.lng];
+            });
+
+            sortedRoute.forEach(function (point, index) {
+                if (point.type === "depot") {
+                    L.marker([point.lat, point.lng], { icon: createDepotIcon(index === 0 ? "D" : "R") })
+                        .bindPopup(index === 0 ? "Départ Dépôt" : "Retour Dépôt")
+                        .addTo(state.routeLayerGroup);
+                    return;
+                }
+
+                L.marker([point.lat, point.lng], { icon: createNumberedIcon(point.order, point.fill_level) })
+                    .bindPopup("Bac #" + point.id + " — " + point.fill_level + "%")
+                    .addTo(state.routeLayerGroup);
+            });
+
+            const boundedRoutePoints = sortedRoute.length > 100
+                ? sortedRoute.slice(0, 99).concat(sortedRoute.slice(-1))
+                : sortedRoute;
+            const waypoints = boundedRoutePoints.map(function (point) {
+                return L.latLng(point.lat, point.lng);
+            });
+            let fallbackDisplayed = false;
+
+            state.currentRoutingControl = L.Routing.control({
+                waypoints: waypoints,
+                router: L.Routing.osrmv1({
+                    serviceUrl: "https://router.project-osrm.org/route/v1",
+                    profile: "driving"
+                }),
+                lineOptions: {
+                    styles: [{ color: COLORS.primary, weight: 4, opacity: 0.8 }]
+                },
+                show: false,
+                addWaypoints: false,
+                routeWhileDragging: false,
+                fitSelectedRoutes: true,
+                createMarker: function () {
+                    return null;
+                }
+            }).addTo(state.routeMap);
+
+            state.currentRoutingControl.on("routingerror", function () {
+                if (fallbackDisplayed) {
+                    return;
+                }
+
+                fallbackDisplayed = true;
+                showToast("Routing routier indisponible — tracé approximatif affiché", "warning");
+                L.polyline(latLngs, {
+                    color: COLORS.primary,
+                    weight: 3,
+                    dashArray: "6 4"
+                }).addTo(state.routeLayerGroup);
+                state.routeMap.fitBounds(L.latLngBounds(latLngs), { padding: [24, 24] });
+                state.routeMap.invalidateSize();
+            });
+
+            state.routeMap.invalidateSize();
+        }
+
+        function renderCollection(collection) {
+            const truckInfo = collection.truck_info || {};
+            const totalDistance = Number(collection.total_distance_km || collection.distance_km || 0);
+            const duration = Number(collection.stats && collection.stats.estimated_duration_min ? collection.stats.estimated_duration_min : 0);
+            const totalBins = Number(collection.total_bins || (collection.bins_selected || []).length || 0);
+
+            elements.assignedTruckName.textContent = truckInfo.type || "--";
+            elements.assignedTruckSeries.textContent = truckInfo.num_serie || "--";
+            elements.assignedTruckCapacity.textContent = truckInfo.capacity != null ? truckInfo.capacity + " bacs" : "--";
+            elements.metricDistance.innerHTML = totalDistance.toFixed(2) + ' <span class="text-xs">km</span>';
+            elements.metricDuration.innerHTML = duration.toFixed(0) + ' <span class="text-xs">min</span>';
+            elements.metricTotalBins.textContent = String(totalBins);
+
+            elements.kpiLastRouteDistance.innerHTML = totalDistance.toFixed(2) + ' <span class="text-xl text-outline">km</span>';
+            elements.kpiLastRouteDuration.textContent = duration.toFixed(0) + " min estimées";
+            elements.kpiLastRouteTruck.textContent = truckInfo.type || "--";
+
+            renderRouteMap(collection.route || []);
+            renderTimeline(collection.route || []);
+        }
+
+        function applyInventoryFilters() {
+            const search = elements.inventorySearch.value.trim().toLowerCase();
+            const filter = elements.inventoryFilter.value;
+
+            state.filteredBins = state.bins.filter(function (bin) {
+                const matchesSearch = !search || String(bin.id).toLowerCase().includes(search);
+                const matchesFilter = filter === "all" || getStatusMeta(bin.fill_level).key === filter;
+                return matchesSearch && matchesFilter;
+            });
+
+            state.currentPage = 1;
+            renderInventoryTable();
+        }
+
+        function updatePaginationButtons(total) {
+            const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+            elements.inventoryPrevPage.disabled = state.currentPage <= 1;
+            elements.inventoryNextPage.disabled = state.currentPage >= totalPages;
+            elements.inventoryPrevPage.style.opacity = elements.inventoryPrevPage.disabled ? "0.4" : "";
+            elements.inventoryNextPage.style.opacity = elements.inventoryNextPage.disabled ? "0.4" : "";
+            elements.inventoryPrevPage.style.cursor = elements.inventoryPrevPage.disabled ? "not-allowed" : "";
+            elements.inventoryNextPage.style.cursor = elements.inventoryNextPage.disabled ? "not-allowed" : "";
+        }
+
+        function renderInventoryTable() {
+            const total = state.filteredBins.length;
+            const startIndex = total === 0 ? 0 : (state.currentPage - 1) * PAGE_SIZE;
+            const pageItems = state.filteredBins.slice(startIndex, startIndex + PAGE_SIZE);
+
+            if (!pageItems.length) {
+                elements.inventoryTableBody.innerHTML = '<tr><td class="py-8 px-8 text-sm text-on-surface-variant" colspan="4">Aucun bac ne correspond aux filtres actuels.</td></tr>';
+                elements.inventoryPaginationLabel.textContent = "Affichage 0-0 de " + total;
+                updatePaginationButtons(total);
+                return;
+            }
+
+            elements.inventoryTableBody.innerHTML = pageItems.map(function (bin, index) {
+                const meta = getStatusMeta(bin.fill_level);
+                const rowClass = index % 2 === 1 ? "bg-surface-container-lowest " : "";
+                return '' +
+                    '<tr class="' + rowClass + 'hover:bg-surface-container-low/50 transition-colors">' +
+                    '<td class="py-4 px-8 font-headline font-bold text-sm text-on-surface">#' + bin.id + "</td>" +
+                    '<td class="py-4 px-8 text-sm text-on-surface-variant font-mono text-xs">' + formatCoordinate(bin.lat) + ", " + formatCoordinate(bin.lng) + "</td>" +
+                    '<td class="py-4 px-8 text-right font-headline font-bold ' + meta.valueClass + '">' + bin.fill_level + "%</td>" +
+                    '<td class="py-4 px-8"><span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ' + meta.badgeClass + ' w-24">' + meta.label + "</span></td>" +
+                    "</tr>";
+            }).join("");
+
+            const displayStart = startIndex + 1;
+            const displayEnd = startIndex + pageItems.length;
+            elements.inventoryPaginationLabel.textContent = "Affichage " + displayStart + "-" + displayEnd + " de " + total;
+            updatePaginationButtons(total);
+        }
+
+        async function handleCollect() {
+            setCollectButtonLoading(true);
+
+            try {
+                const useRandom = elements.collectRandomToggle.checked;
+                const value = Number(elements.collectCountSlider.value);
+                const path = useRandom ? "/collect" : "/collect?n=" + value;
+                const payload = await fetchJson(path);
+                renderCollection(payload);
+                showToast("Tournée générée avec succès", "success");
+            } catch (error) {
+                showToast("Erreur API — impossible de générer la tournée", "error");
+            } finally {
+                setCollectButtonLoading(false);
+            }
+        }
+
+        function bindEvents() {
+            updateSliderUi();
+            updateRandomUi();
+
+            elements.collectCountSlider.addEventListener("input", updateSliderUi);
+            elements.collectRandomToggle.addEventListener("change", updateRandomUi);
+            elements.collectButton.addEventListener("click", handleCollect);
+
+            elements.inventorySearch.addEventListener("input", applyInventoryFilters);
+            elements.inventoryFilter.addEventListener("change", applyInventoryFilters);
+            elements.inventoryPrevPage.addEventListener("click", function () {
+                if (state.currentPage > 1) {
+                    state.currentPage -= 1;
+                    renderInventoryTable();
+                }
+            });
+            elements.inventoryNextPage.addEventListener("click", function () {
+                const totalPages = Math.max(1, Math.ceil(state.filteredBins.length / PAGE_SIZE));
+                if (state.currentPage < totalPages) {
+                    state.currentPage += 1;
+                    renderInventoryTable();
+                }
+            });
+        }
+
+        async function initializeDashboard() {
+            updateDateTime();
+            window.setInterval(updateDateTime, 1000);
+            setInitialLoadingState();
+            initMaps();
+            bindEvents();
+
+            try {
+                const results = await Promise.all([
+                    fetchJson("/"),
+                    fetchJson("/bins")
+                ]);
+
+                const binsPayload = normalizeBinsPayload(results[1]);
+                state.bins = binsPayload.bins.slice();
+                state.filteredBins = state.bins.slice();
+
+                setApiStatus(true);
+                renderKpis(binsPayload.total, state.bins);
+                renderGlobalMap(state.bins);
+                renderCriticalBins(state.bins);
+                renderInventoryTable();
+                setCollectionDefaults();
+            } catch (error) {
+                setApiStatus(false);
+                elements.criticalTotalBadge.textContent = "0 Total";
+                elements.criticalBinsList.innerHTML = '' +
+                    '<div class="bg-surface-container-lowest p-4 rounded-lg shadow-[0_2px_8px_rgba(29,28,23,0.02)]">' +
+                    '<span class="font-headline font-semibold text-on-surface block mb-1">Données indisponibles</span>' +
+                    '<span class="font-label text-xs text-on-surface-variant">La liste des bacs critiques sera affichée dès que l&apos;API sera joignable.</span>' +
+                    "</div>";
+                elements.inventoryTableBody.innerHTML = '<tr><td class="py-8 px-8 text-sm text-on-surface-variant" colspan="4">Impossible de charger l&apos;inventaire des bacs.</td></tr>';
+                elements.inventoryPaginationLabel.textContent = "Affichage 0-0 de 0";
+                showToast("Erreur API — impossible de charger les données", "error");
+            }
+        }
+
+        initializeDashboard();
+    </script>
+</body></html>

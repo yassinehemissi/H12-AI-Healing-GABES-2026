@@ -1,0 +1,36 @@
+{
+  "location": "Zone_Industrielle_Nord",
+  "date": "2024-01-17",
+  "alert_level": "rouge",
+  "alert_message": "**🚨 ALERTE ROUGE – QUALITÉ DE L’AIR DANGEREUSE À GABÈS 🚨**\n\n**Zone concernée : Zone Industrielle Nord**\n\n⚠️ **Danger immédiat** : La pollution de l’air atteint des niveaux **très dangereux** (AQI = 375, niveau \"Dangereux\").\n🔴 **Risques pour la santé** : Difficultés respiratoires, irritations, maux de tête. **Les personnes sensibles (enfants, personnes âgées, asthmatiques) sont en danger.**\n\n🚫 **Mesures urgentes** :\n✔ **Restez à l’intérieur** et fermez portes/fenêtres.\n✔ **Évitez les efforts physiques** en extérieur.\n✔ **Portez un masque** (type FFP2) si vous devez sortir.\n✔ **Signalez tout symptôme** (toux, essoufflement) aux services de santé.\n\n📢 **Suivez les mises à jour** et respectez les consignes des autorités.\n\n**Agissez maintenant pour vous protéger !** #Gabès #AlertePollution",
+  "aqi_score": 375.7,
+  "pollution_summary": {},
+  "anomalies": [
+    "Concentration de SO2 (234.5 µg/m³) dépassant largement le seuil OMS de 40 µg/m³ (moyenne sur 24h).",
+    "Concentration de PM2.5 (112.7 µg/m³) dépassant le seuil OMS de 15 µg/m³ (moyenne annuelle) et 25 µg/m³ (moyenne sur 24h).",
+    "Concentration de NO2 (94.3 µg/m³) dépassant le seuil OMS de 25 µg/m³ (moyenne annuelle) et proche du seuil de 100 µg/m³ (moyenne sur 1h).",
+    "AQI calculé (375.7) indiquant une qualité de l'air très malsaine (niveau 'Dangereux').",
+    "Rapport citoyen signalant une odeur de soufre forte et des difficultés respiratoires, corroborant les données de SO2 élevées."
+  ],
+  "citizen_reports_count": 1,
+  "health_recommendations": [
+    "Rester à l'intérieur autant que possible et fermer toutes les fenêtres pour limiter l'exposition aux polluants.",
+    "Éviter toute activité physique intense en extérieur, y compris le sport, pour réduire l'inhalation de polluants.",
+    "Utiliser un purificateur d'air avec filtre HEPA à l'intérieur pour améliorer la qualité de l'air intérieur.",
+    "Porter un masque de type FFP2 ou N95 si vous devez sortir, pour filtrer les particules fines (PM2.5) et le dioxyde de soufre (SO2).",
+    "Surveiller les symptômes respiratoires (toux, essoufflement, irritation des yeux ou de la gorge) et consulter un médecin en cas d'aggravation.",
+    "Hydrater régulièrement pour aider à éliminer les toxines inhalées et apaiser les muqueuses irritées.",
+    "Éviter l'utilisation de bougies, d'encens ou de produits ménagers parfumés qui peuvent aggraver la pollution intérieure.",
+    "Suivre les mises à jour des autorités locales concernant la qualité de l'air et les éventuelles restrictions.",
+    "Limiter l'utilisation de véhicules motorisés et privilégier les transports en commun ou le covoiturage pour réduire les émissions de polluants.",
+    "Si vous faites partie d'un groupe vulnérable (asthme, maladies cardiovasculaires ou respiratoires chroniques), consulter un professionnel de santé pour des conseils personnalisés.",
+    "En cas de symptômes graves (difficultés respiratoires sévères, douleurs thoraciques), appeler immédiatement les services d'urgence.",
+    "Prévoir un kit d'urgence incluant des médicaments (si prescrits), des masques et de l'eau en cas de pic de pollution prolongé."
+  ],
+  "citizen_reports_summary": "1 signalements pour cette zone.",
+  "hotzone_clusters": [],
+  "heatmap_geojson": {
+    "type": "FeatureCollection",
+    "features": []
+  }
+}
